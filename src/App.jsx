@@ -17,6 +17,30 @@ class App extends Component {
     filter: "",
   };
 
+  componentDidMount() {
+    try {
+      const stored = localStorage.getItem('contacts');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          this.setState({ contacts: parsed });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to read contacts from localStorage:', e);
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      try {
+        localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+      } catch (e) {
+        console.error('Failed to save contacts to localStorage:', e);
+      }
+    }
+  }
+
   addContact = ({ name, number }) => {
     const { contacts } = this.state;
     const exists = contacts.some(
